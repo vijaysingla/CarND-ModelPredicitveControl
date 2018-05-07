@@ -78,7 +78,7 @@ w2 = stod(argv[4]);
 w3 = stod(argv[5]);
 w4 = stod(argv[6]);
 
-  h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&mpc,&Lf](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -98,6 +98,8 @@ w4 = stod(argv[6]);
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double delta = j[1]["steering_angle"];
+		  double acc = j[1]["throttle"];
 
           // ref_x ,ref_y to store waypoints in local vehcile coordinate system
 
@@ -141,12 +143,20 @@ w4 = stod(argv[6]);
           cte = 0 - polyeval(coeffs,0);
           epsi = 0 -atan(coeffs[1]);
 
+          // Considering latency
+          double latency  = 0.1 ;//100ms
+
+          double x_delay = v*latency; //  0 + v*cos(0)*latency
+          double y_delay = 0 ; // 0 + v*sin(0)*latency
+          double psi_delay = v*delta/Lf*latency; // 0 +v*delta/Lf*latency
+          double v_delay = v + acc*latency;
+
 
           Eigen::VectorXd state(6);
           /*
            * In local vehicle coordinate system , px,py,psi are zero
            */
-          state << 0,0,0,v,cte,epsi;
+          state << x_delay,y_delay,psi_delay,v_delay,cte,epsi;
 
           auto vars = mpc.Solve(state, coeffs);
           // Multiplying by -1 as counterclockwise in simulator means right turn
@@ -207,7 +217,7 @@ w4 = stod(argv[6]);
           //
           // NOTE: REMEMBER TO SET THIS TO 100 MILLISECONDS BEFORE
           // SUBMITTING.
-          this_thread::sleep_for(chrono::milliseconds(0));
+          this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {

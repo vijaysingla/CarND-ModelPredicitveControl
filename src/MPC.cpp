@@ -108,9 +108,21 @@ class FG_eval {
 	        AD<double> cte0 = vars[cte_start + t - 1];
 	        AD<double> epsi0 = vars[epsi_start + t - 1];
 
-	        // Considering the actuation at time t.
-	        AD<double> delta0 = vars[delta_start + t - 1];
+	        AD<double> delta0 = vars[delta_start + t -1];
 	        AD<double> a0 = vars[a_start + t - 1];
+
+	        // Considering the actuation at time t.
+//	        if (t > 2)
+//	        {
+//	        	AD<double> delta0 = vars[delta_start + t -3];
+//	        	AD<double> a0 = vars[a_start + t - 3];
+//	        }
+//	        else
+//	        {
+//	        	AD<double> delta0 = vars[delta_start + t -1];
+//	        	AD<double> a0 = vars[a_start + t - 1];
+//	        }
+
 	        // for 3 order polynomial  , y = a0 +a1*x+a2*x^2+a3*x^3
 	        AD<double> f0 = coeffs[0] + coeffs[1] * x0+coeffs[2]*x0*x0 + coeffs[3]*x0*x0*x0;
 	        // derivative of 3rd orde poly is a1 +2*a2*x +3*a3*x^2

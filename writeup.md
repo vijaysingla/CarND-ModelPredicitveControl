@@ -10,10 +10,15 @@ A kinematic model is used to emulate the car behaviour. There are 6 states in th
 Other parameters used in defining the model are dt (time step), Lf ( length from front axle to centre of mass of car ) . THe actuator inputs are throttle (acc) and steering angle(delta) . The model state equations are  :
 
 x(t+1) = x(t) + v(t)*cos(psi)*dt
+
 y(t+1) = y(t) + v(t)*sin(psi)*dt
+
 psi(t+1) = psi(t) +v(t)*delta(t)/Lf*dt
+
 v(t+1) =v(t) + acc(t)*dt
+
 cte(t+1) =cte(t) + v(t)*sin(epsi(t))*dt
+
 epsi(t+1) = epsi(t) + v(t)*delta(t)/Lf*dt
 
 This model is similar to bicylce model in some context . The main difference is the way psi  is updated. In this model, for a steering angle and fixed velocity, less turn rate is produced if Lf is large. This model simplifies the psi update but captures the critical factors like velcocity, steeirng angle and Lf effecting the orientation. For the simualtor, Lf is tuned so that model can represent he simualtor car driving behavior.

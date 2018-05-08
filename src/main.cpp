@@ -65,18 +65,20 @@ Eigen::VectorXd polyfit(Eigen::VectorXd xvals, Eigen::VectorXd yvals,
   return result;
 }
 
-int main(int argc,const char *argv[]) {
+int main() {
   uWS::Hub h;
 
   // MPC is initialized here!
   MPC mpc;
-
-dt =stod(argv[1]);
-ref_v = stod(argv[2]);
-w1 = stod(argv[3]);
-w2 = stod(argv[4]);
-w3 = stod(argv[5]);
-w4 = stod(argv[6]);
+/*
+ * These inputs were being used as arguments to the main function for tuning
+ */
+//dt =stod(argv[1]);
+//ref_v = stod(argv[2]);
+//w1 = stod(argv[3]);
+//w2 = stod(argv[4]);
+//w3 = stod(argv[5]);
+//w4 = stod(argv[6]);
 
   h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -100,8 +102,7 @@ w4 = stod(argv[6]);
           double v = j[1]["speed"];
 
 
-          // ref_x ,ref_y to store waypoints in local vehcile coordinate system
-
+          // ref_x ,ref_y to store waypoints in local vehicle coordinate system
           vector<double> ref_x;
           vector<double>ref_y;
           /*
@@ -116,18 +117,19 @@ w4 = stod(argv[6]);
         	  ref_y.push_back(-rel_x*sin(psi) +rel_y*cos(psi));
           }
 
-          // Converting ref_x and ref_y vector into eigen vector as polyfit takes eigne vector as input
+          // Converting ref_x and ref_y vector into eigen vector as polyfit takes eigen vector as input
           /*
            * this code snipet to convert vector  to eigen vector  is taken from
            * https://stackoverflow.com/questions/17036818/initialise-eigenvector-with-stdvector
            */
           double* ptrx =&ref_x[0];
           double* ptry = &ref_y[0];
-          Eigen::Map<Eigen::VectorXd>x_vals(ptrx,6);
+          Eigen::Map<Eigen::VectorXd>x_vals(ptrx,6); // 6 here is size of ref_x
           Eigen::Map<Eigen::VectorXd>y_vals(ptry,6);
 
           // fitting 3rd order polynomial between x and y points of trajectory
           Eigen::VectorXd coeffs = polyfit(x_vals,y_vals,3);
+
 
           double cte;
           double epsi;
@@ -138,10 +140,10 @@ w4 = stod(argv[6]);
            * cte  = 0 -polyeval(coeffs,0)
            * epsi = 0 -atan(coeffs[1])
             */
-
           cte = 0 - polyeval(coeffs,0);
           epsi = 0 -atan(coeffs[1]);
 
+          // Defining the state
           Eigen::VectorXd state(6);
           /*
            * In local vehicle coordinate system , px,py,psi are zero
@@ -149,8 +151,8 @@ w4 = stod(argv[6]);
           state << 0,0,0,v,cte,epsi;
 
           auto vars = mpc.Solve(state, coeffs);
-          // Multiplying by -1 as counterclockwise in simulator means right turn
 
+          // Multiplying by -1 as counterclockwise in simulator means right turn
           double steer_value = -1*vars[0];
           double throttle_value = vars[1];
           std::cout<<"steer: " <<steer_value << "throttle: "<<throttle_value <<std::endl;
@@ -165,7 +167,7 @@ w4 = stod(argv[6]);
 
           //.mpc_values  are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-
+          // these valuse represent the predicted path by model predictive control
           for (int t=0;t<9;t++)
           {
         	  mpc_x_vals.push_back(vars[t+2]);
@@ -180,6 +182,7 @@ w4 = stod(argv[6]);
           /*
            * Creating the reference points using poly fit coeffs for local coordinate system
            */
+          // These values represent the refernece trajectory that MPC controller is used to predict the optimal path
           for (int i =0 ; i <20; i++)
           {
         	  double x = i*1.5;

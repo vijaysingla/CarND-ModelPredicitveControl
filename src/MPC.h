@@ -1,13 +1,16 @@
 #ifndef MPC_H
 #define MPC_H
-extern double dt;
-//extern int N;
-extern double w1;
-extern double w2;
-extern double w3;
-extern double w4;
-extern double w5;
-extern double ref_v;
+
+/*
+ * These commented extern varriables were used when these are being passed as arguments through main function
+ * for tuning
+ */
+//extern double dt;
+//extern double w1;
+//extern double w2;
+//extern double w3;
+//extern double w4;
+//extern double ref_v;
 
 #include <vector>
 #include "Eigen-3.3/Eigen/Core"

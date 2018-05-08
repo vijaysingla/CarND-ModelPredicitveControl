@@ -5,18 +5,32 @@
 
 using CppAD::AD;
 
-// TODO: Set the timestep length and duration
-int N = 10;
-double dt ;
- double ref_v;
- double w1;
- double w2;
- double w3;
- double w4;
- double w5;
+/*
+ *These commented declarations were used when they were being passed as arguments to main function for tuning
+ */
+//double dt ;
+// double ref_v;
+// double w1;
+// double w2 ;
+// double w3;
+// double w4;
 
- // Reference velocity defined
- //double ref_v = 20;
+//No . of points for the model
+int N = 10 ;
+// dt is the time between the two N points
+double dt  = 0.05;
+// Reference velocity defined
+ double ref_v =30;
+ // w1 is the weight for cost cte error
+ double w1 =1;
+ //w2 is the weight for cost epsi error
+ double w2 =80;
+ // w3 is the weight for cost delta error
+ double w3 =5;
+ // w4 is the weight  for cost acceleration error
+ double w4 =5;
+
+
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -267,9 +281,13 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   std::cout << "Cost " << cost << std::endl;
   std::cout << "delta: "<<solution.x[delta_start] <<std::endl;
   std::cout<<"a_start :"<< solution.x[a_start]<<std::endl;
+
+  // Saving the initial value of acceleration and delta to output vector so that it can be passed
+  // to the simulator
   vector <double> output;
   output.push_back( solution.x[delta_start]);
   output.push_back( solution.x[a_start]);
+
   //Saving the predicted x and y values in output vector so that they can be visualized
   for (int j=2 ; j < N+1;j ++)
   {

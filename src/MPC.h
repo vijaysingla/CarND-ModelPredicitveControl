@@ -8,7 +8,7 @@ extern double w3;
 extern double w4;
 extern double w5;
 extern double ref_v;
-extern const double Lf;
+
 #include <vector>
 #include "Eigen-3.3/Eigen/Core"
 

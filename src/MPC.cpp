@@ -111,18 +111,17 @@ class FG_eval {
 	        AD<double> delta0 = vars[delta_start + t -1];
 	        AD<double> a0 = vars[a_start + t - 1];
 
-	        // Considering the actuation at time t.
-//	        if (t > 2)
-//	        {
-//	        	AD<double> delta0 = vars[delta_start + t -3];
-//	        	AD<double> a0 = vars[a_start + t - 3];
-//	        }
-//	        else
-//	        {
-//	        	AD<double> delta0 = vars[delta_start + t -1];
-//	        	AD<double> a0 = vars[a_start + t - 1];
-//	        }
+	      // Consideration for latency
+	        // 100 ms latency  = 0.1 seconds
+	        // dt = 0.05 ,time horizon = dt*N = 0.5 sec
+	        // it means  for every 3rd  point out of N  , acceleration  = 1st point acceleration
+	        if (t > 2)
+	        {
+	        	delta0 = vars[delta_start + t -3];
+	        	a0 = vars[a_start + t - 3];
+	        }
 
+	        // Considering the actuation at time t.
 	        // for 3 order polynomial  , y = a0 +a1*x+a2*x^2+a3*x^3
 	        AD<double> f0 = coeffs[0] + coeffs[1] * x0+coeffs[2]*x0*x0 + coeffs[3]*x0*x0*x0;
 	        // derivative of 3rd orde poly is a1 +2*a2*x +3*a3*x^2
